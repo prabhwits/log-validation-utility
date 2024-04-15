@@ -133,8 +133,8 @@ export const checkOnInit = (data: any, msgIdSet: any) => {
     try {
       logger.info(`Checking for tax_number for ${constants.ON_INIT}`)
       const tags = on_init.tags[0].list
-      let tax_number = {}
-      let provider_tax_number ={}
+      let tax_number: any = {}
+      let provider_tax_number: any = {}
       tags.forEach((e: any) => {
         if (e.code === 'tax_number') {
           if (!e.value) {
@@ -159,8 +159,32 @@ export const checkOnInit = (data: any, msgIdSet: any) => {
         logger.error(`tax_number must present in ${constants.ON_INIT}`)
         onInitObj.providertaxNumber = `provider_tax_number must be present for ${constants.ON_INIT}`
       }
+      if (tax_number.value?.length == 15 && provider_tax_number?.value?.length == 10) {
+        const pan_id = tax_number?.value.slice(2, 12)
+        if (pan_id != provider_tax_number?.value) {
+          logger.error(`Pan_id is different in tax_number and provider_tax_number in ${constants.ON_INIT}`)
+          onInitObj[`message.order.tags[0].list`] = `Pan_id is different in tax_number and provider_tax_number in message.order.tags[0].list`
+        }
+      }
+
     } catch (error: any) {
       logger.error(`tax_number not present in tags for ${constants.ON_INIT}`)
+    }
+
+    try {
+      logger.info(`Checking for tags in /${constants.ON_INIT}`)
+      if (on_init.tags && isArray(on_init.tags)) {
+        setValue(
+          'bpp_tags',
+          on_init.tags.forEach((data: any) => {
+            if (data.code == 'bpp_terms') {
+              setValue('list_ON_INIT', data.list)
+            }
+          }),
+        )
+      }
+    } catch (error: any) {
+      logger.error(`!!Error while checking tags in /${constants.ON_INIT} ${error.stack}`)
     }
 
     try {
