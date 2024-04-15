@@ -193,8 +193,12 @@ export const checkOnConfirm = (data: any) => {
 
     try {
       logger.info(`Checking for valid pan_id in provider_tax_number and tax_number in /on_confirm`)
-      const list = message.order.tags[0].list
-      if (message.order.tags[0].code == "bpp_terms") {
+      const bpp_terms_obj:any = message.order.tags.filter((item: any) =>{
+        return item?.code == "bpp_terms"
+      })[0]
+      const list = bpp_terms_obj.list
+      
+      if (!_.isEmpty(bpp_terms_obj)) {
         let tax_number = ""
         let provider_tax_number = ""
         list.map((item: any) => {
@@ -209,6 +213,7 @@ export const checkOnConfirm = (data: any) => {
           }
 
           if (item.code == "provider_tax_number") {
+            console.log(item.value.length)
             if (item.value.length != 10) {
               const key = `message.order.tags[0].list`
               onCnfrmObj[key] = `Number of digits in provider tax number in  message.order.tags[0].list should be 10`

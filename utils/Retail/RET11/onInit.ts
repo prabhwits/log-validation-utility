@@ -132,7 +132,10 @@ export const checkOnInit = (data: any, msgIdSet: any) => {
     // checking for tax_number in tags
     try {
       logger.info(`Checking for tax_number for ${constants.ON_INIT}`)
-      const tags = on_init.tags[0].list
+      const bpp_terms_obj:any = message.order.tags.filter((item: any) =>{
+        return item?.code == "bpp_terms"
+      })[0]
+      const tags = bpp_terms_obj.list
       let tax_number: any = {}
       let provider_tax_number: any = {}
       tags.forEach((e: any) => {
