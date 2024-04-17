@@ -448,7 +448,6 @@ export const checkOnCancel = (data: any, msgIdSet: any) => {
         let del_start_location: any = {}
         let del_end_location: any = {}
 
-        console.log("Hello Flow 5 ===>", RTOobj, DELobj)
         // For RTO Object
         if (!RTOobj.length) {
           logger.error(`RTO object is mandatory for ${constants.ON_CANCEL}`)
