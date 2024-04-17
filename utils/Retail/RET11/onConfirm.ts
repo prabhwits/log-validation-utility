@@ -193,11 +193,11 @@ export const checkOnConfirm = (data: any) => {
 
     try {
       logger.info(`Checking for valid pan_id in provider_tax_number and tax_number in /on_confirm`)
-      const bpp_terms_obj:any = message.order.tags.filter((item: any) =>{
+      const bpp_terms_obj: any = message.order.tags.filter((item: any) => {
         return item?.code == "bpp_terms"
       })[0]
       const list = bpp_terms_obj.list
-      
+      const np_type = list.filter((item: any) => item.code === "np_type" && item.value === "MSN");
       if (!_.isEmpty(bpp_terms_obj)) {
         let tax_number = ""
         let provider_tax_number = ""
@@ -235,7 +235,7 @@ export const checkOnConfirm = (data: any) => {
           onCnfrmObj['provider_tax_number'] = `provider_tax_number must be present for ${constants.ON_CONFIRM}`
         }
 
-        if (tax_number.length == 15 && provider_tax_number.length == 10) {
+        if (tax_number.length == 15 && provider_tax_number.length == 10 && np_type.length > 0) {
           const pan_id = tax_number.slice(2, 12)
           if (pan_id != provider_tax_number) {
             onCnfrmObj[`message.order.tags[0].list`] = `Pan_id is different in tax_number and provider_tax_number in message.order.tags[0].list`
@@ -374,7 +374,7 @@ export const checkOnConfirm = (data: any) => {
       const quoteErrors = compareQuoteObjects(on_select_quote, on_confirm.quote, constants.ON_CONFIRM, constants.ON_SELECT)
 
       const hasItemWithQuantity = _.some(on_confirm.quote.breakup, item => _.has(item, 'item.quantity'));
-      if (hasItemWithQuantity){
+      if (hasItemWithQuantity) {
         const key = `quantErr`
         onCnfrmObj[key] = `Extra attribute Quantity provided in quote object i.e not supposed to be provided after on_select so invalid quote object`
       }
